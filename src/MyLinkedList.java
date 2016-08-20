@@ -1,9 +1,17 @@
+import java.util.ArrayList;
+
 public class MyLinkedList<T> {
 	/** Reference to head node. */
 	protected Node<T> mHead;
 
 	/** Length of list. */
 	protected int mLength;
+	
+	/** Path Cost for uniform cost search */
+	public int pathCost;
+	
+	/** Vertice Head **/
+	public Node<T> Vertex;
 
 	public MyLinkedList() {
 		mHead = null;
@@ -11,8 +19,9 @@ public class MyLinkedList<T> {
 	} // end of SimpleList()
 	
 	public MyLinkedList(T value) {
-		mHead = new Node<T>(value);
-		mLength++;
+		//mHead = new Node<T>(value);
+		//mLength++;
+		Vertex = new Node<T>(value);
 	}
 
 	/**
@@ -23,7 +32,7 @@ public class MyLinkedList<T> {
 	 */
 	public void add(T newValue) {
 		Node<T> newNode = new Node<T>(newValue);
-
+		
 		// If head is empty, then list is empty and head reference need to be
 		// initialised.
 		if (mHead == null) {
@@ -33,10 +42,12 @@ public class MyLinkedList<T> {
 		else {
 			newNode.setNext(mHead);
 			mHead = newNode;
+			
 
 		}
-
+		
 		mLength++;
+		
 	} // end of add()
 
 	/**
@@ -53,13 +64,14 @@ public class MyLinkedList<T> {
 	 */
 	public void add(int index, T newValue) throws IndexOutOfBoundsException {
 		if (index >= mLength || index < 0) {
-			throw new IndexOutOfBoundsException("Supplied index is invalid.");
+			 
 		}
 
 		Node<T> newNode = new Node<T>(newValue);
 
 		if (mHead == null) {
 			mHead = newNode;
+			
 		}
 		// list is not empty
 		else {
@@ -108,7 +120,7 @@ public class MyLinkedList<T> {
 	public boolean search(T value) {
 		Node<T> currNode = mHead;
 		for (int i = 0; i < mLength; ++i) {
-			if (currNode.getValue() == value) {
+			if (currNode.getValue().equals(value)) {
 				return true;
 			}
 			currNode = currNode.getNext();
@@ -116,7 +128,18 @@ public class MyLinkedList<T> {
 
 		return false;
 	} // end of search()
+	
+	public int searchlocation(T value) {
+		Node currNode = mHead;
+		for (int i = 0; i < mLength; ++i) {
+			if (currNode.getValue().equals(value)) {
+				return i;
+			}
+			currNode = currNode.getNext();
+		}
 
+		return -1;
+	} // end of search()
 	/**
 	 * Delete given value from list (delete first instance found).
 	 * 
@@ -126,6 +149,35 @@ public class MyLinkedList<T> {
 	 *            Value to remove.
 	 * @return True if deletion was successful, otherwise false.
 	 */
+	
+	public void removevalue(T key)
+	   {
+	      if(mHead == null)
+	         throw new RuntimeException("cannot delete");
+
+	      if( mHead.mValue.equals(key) )
+	      {
+	    	  mHead = mHead.getNext();
+	         return;
+	      }
+
+	      Node<T> cur  = mHead;
+	      Node<T> prev = null;
+
+	      while(cur != null && !cur.mValue.equals(key) )
+	      {
+	         prev = cur;
+	         cur = cur.getNext();
+	      }
+
+	      if(cur == null)
+	         throw new RuntimeException("cannot delete");
+
+	      //delete cur node
+	      prev.setNext(cur.getNext());
+	   }
+	
+	
 	public boolean remove(T value) {
 		// YOUR IMPLEMENTATION
 
@@ -137,7 +189,7 @@ public class MyLinkedList<T> {
 		Node<T>	 prevNode = null;
 
 		// check if value is head node
-		if (currNode.getValue() == value) {
+		if (currNode.getValue().equals(value)) {
 			mHead = currNode.getNext();
 			mLength--;
 			return true;
@@ -147,10 +199,11 @@ public class MyLinkedList<T> {
 		currNode = currNode.getNext();
 
 		while (currNode != null) {
-			if (currNode.getValue() == value) {
+			if (currNode.getValue().equals(value)) {
 				prevNode.setNext(currNode.getNext());
 				currNode = null;
 				mLength--;
+				
 				return true;
 			}
 			prevNode = currNode;
@@ -300,6 +353,24 @@ public class MyLinkedList<T> {
 
 		return str.toString();
 	} // end of getString();
+	
+	public T getVertex(){
+		return Vertex.getValue();
+	}
+	
+    public ArrayList<T> neighbours() {
+        ArrayList<T> neighbours = new ArrayList<T>();
+        Node<T> currNode = mHead;
+        
+        for(int i=0;i< mLength;i++){
+        		neighbours.add(currNode.getValue());
+        		currNode = currNode.getNext();
+        	}
+        	
+        // Implement me!
+        
+        return neighbours;
+    } // end of neighbours()
 
 	/**
 	 * Node type, inner private class.
@@ -310,6 +381,7 @@ public class MyLinkedList<T> {
 		protected T mValue;
 		/** Reference to next node. */
 		protected Node<T> mNext;
+
 
 		public Node(T value) {
 			mValue = value;
@@ -332,6 +404,7 @@ public class MyLinkedList<T> {
 		public void setNext(Node<T> next) {
 			mNext = next;
 		}
+		
 
 	} // end of inner class Node
 

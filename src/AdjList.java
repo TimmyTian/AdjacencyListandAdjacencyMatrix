@@ -2,6 +2,8 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
+import javax.management.RuntimeErrorException;
+
 /**
  * Adjacency list implementation for the FriendshipGraph interface.
  * 
@@ -12,45 +14,35 @@ import java.util.Map.Entry;
 public class AdjList <T extends Object> implements FriendshipGraph<T>
 {   
 		
-	Map<T, MyLinkedList<T>> vertlabels = new HashMap<T, MyLinkedList<T>>();
-	Map<T, Boolean> total = new HashMap<T, Boolean>();
+	private Map<T, MyLinkedList<T>> vertlabels;
 //       MyLinkedList[] linkedlist = new MyLinkedList[];
     /**
 	 * Contructs empty graph.
 	 */
     public AdjList() {
-    	
+    	vertlabels = new HashMap<T, MyLinkedList<T>>();
     	
     } // end of AdjList()
     
     
     public void addVertex(T vertLabel) {
     	
-    	if(vertLabel==null) 
-    	{
-    		return;
+    	if(!vertlabels.containsKey(vertLabel)){
+    	vertlabels.put(vertLabel, new MyLinkedList<T>());
     	}
-    	if(vertlabels.containsKey(vertLabel)) {
-    		System.out.println("Already exists");
-    		return;
-    	}
-    	vertlabels.put(vertLabel, new MyLinkedList<T>(vertLabel));
-    	//vertlabels.get(vertLabel).print();
-    	
     	// Implement me!
     } // end of addVertex()
 	
     
     public void addEdge(T srcLabel, T tarLabel) {
-        if(vertlabels.containsKey(srcLabel) && vertlabels.get(srcLabel).search(tarLabel))
-        {
-        	//System.out.println("edge already exist");
-        	return;
-        }else if(vertlabels.containsKey(srcLabel) && vertlabels.get(srcLabel).search(srcLabel)){
-        	return;
-        }else if(vertlabels.containsKey(srcLabel) && !vertlabels.get(srcLabel).search(srcLabel)){
-        	vertlabels.get(srcLabel).add(tarLabel);
-        }
+    	if(srcLabel != tarLabel){
+	        if(vertlabels.containsKey(srcLabel) && !vertlabels.get(srcLabel).search(tarLabel)){
+	        	vertlabels.get(srcLabel).add(tarLabel);
+	        }
+	        if(vertlabels.containsKey(tarLabel) && !vertlabels.get(tarLabel).search(srcLabel)){
+	        	vertlabels.get(tarLabel).add(srcLabel);
+	        }
+    	}
        
 
         //if srclabel and tarlabel exist then throw exception
@@ -79,6 +71,13 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
     public void removeVertex(T vertLabel) {
        if(vertlabels.containsKey(vertLabel))
        {
+    	   for(int i=0;i< vertlabels.get(vertLabel).mLength;i++){    		   
+    		   if(vertlabels.containsKey(vertlabels.get(vertLabel).get(i))){
+    			   if(vertlabels.get(vertlabels.get(vertLabel).get(i)).search(vertLabel)){
+    				   vertlabels.get(vertlabels.get(vertLabel).get(i)).remove(vertLabel);
+    			   }
+    		   }
+    	   }
     	   vertlabels.remove(vertLabel);
        }
     	// Implement me!
@@ -86,10 +85,13 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
 	
     
     public void removeEdge(T srcLabel, T tarLabel) {
-        if(vertlabels.containsKey(srcLabel)&& vertlabels.get(srcLabel).search(tarLabel))
-        {
-        	vertlabels.get(srcLabel).remove(tarLabel);
-        }
+    	if(srcLabel != tarLabel){
+    		if(vertlabels.containsKey(srcLabel) && vertlabels.get(srcLabel).search(tarLabel))
+    			vertlabels.get(srcLabel).remove(tarLabel);
+    		if(vertlabels.containsKey(tarLabel) && vertlabels.get(tarLabel).search(srcLabel))
+	            vertlabels.get(tarLabel).remove(srcLabel); 
+    	}
+        
     	// Implement me!
     } // end of removeEdges()
 	
@@ -122,19 +124,14 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
     } // end of printEdges()
     
     
-    public int shortestPathDistance(T vertLabel1, T vertLabel2) {
-    	
-    	// Uniform Cost Search (UCS) path code. Use this for difficult level
-    			// monster path code.
-    			//
-    			// This code displays the path as arraylist from Start (ie, monster location)
-    			// to shortest distance player location.
+    public int shortestPathDistance(T vertLabel1, T vertLabel2) {	
+
     			
 		ArrayList<T> shortestPathList = new ArrayList<T>();
 		HashMap<T, Boolean> visited = new HashMap<T, Boolean>();
 
 		if (vertLabel1 == vertLabel2)
-			return 0;
+			return disconnectedDist;
 		Queue<T> queue = new LinkedList<T>();
 		Stack<T> pathStack = new Stack<T>();
 
@@ -184,6 +181,7 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
         // if we reach this point, source and target are disconnected
         return disconnectedDist;
 		}
+		
     } // end of shortestPathDistance()
     
 } // end of class AdjList
