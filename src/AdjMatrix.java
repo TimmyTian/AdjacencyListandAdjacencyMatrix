@@ -11,24 +11,58 @@ import java.util.*;
  */
 public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 {
-
+	private Map<T, Node<T>> Node;
+	Node[][] adjmatrix;
 	/**
 	 * Contructs empty graph.
 	 */
     public AdjMatrix() {
+    	adjmatrix = new Node[Node.size()][Node.size()];
     	// Implement me!
     } // end of AdjMatrix()
     
     
     public void addVertex(T vertLabel) {
+    	if(!Node.containsKey(vertLabel)){
+        // Node.put(vertLabel,);                  //TO DO  check here
+         //put((vertLabel, new Node[Node.size()][Node.size()]);
+        	}
+    
         // Implement me!
     } // end of addVertex()
 	
     
     public void addEdge(T srcLabel, T tarLabel) {
-        // Implement me!
+    	Node distance;
+    	if(srcLabel != tarLabel){
+	        if(Node.containsKey(srcLabel) && !Node.get(srcLabel).search(tarLabel)){
+	        	Node.get(srcLabel).add(tarLabel);
+	        }
+	        if(Node.containsKey(tarLabel) && !Node.get(tarLabel).search(srcLabel)){
+	        	Node.get(tarLabel).add(srcLabel);
+	        }
+	       // Node[srcLabel][tarLabel]=distance;
+	       // Node[tarLabel][srcLabel]=distance;
+	    			}
+    	// Implement me!
     } // end of addEdge()
 	
+    
+    public String toString() {
+    	int numberOfVertices = adjmatrix.length;
+    	String result = "";
+
+    	// For Adjacency Matrix
+    	for (int j = 0, k = 0; j < numberOfVertices; j++) {
+    	    result += j + ":";
+    	    for (k = j; k < numberOfVertices; k++) {
+    		if (adjmatrix[j][k] != null) {
+    		    result += " (" + k + "," + adjmatrix[j][k] + ")";
+    		}
+    	    }
+    	    }
+		return toString();
+    }
 
     public ArrayList<T> neighbours(T vertLabel) {
         ArrayList<T> neighbours = new ArrayList<T>();
