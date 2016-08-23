@@ -1,37 +1,33 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 
-public class MyLinkedList<T> {
+public class MyLinkedList<Object> {
 	/** Reference to head node. */
-	protected Node<T> mHead;
+	protected Node<Object> mHead;
 
 	/** Length of list. */
 	protected int mLength;
 	
-	/** Path Cost for uniform cost search */
-	public int pathCost;
-	
-	/** Vertice Head **/
-	public Node<T> Vertex;
+	public ArrayList<Object> path;
+	public int minDistance;
 
 	public MyLinkedList() {
 		mHead = null;
 		mLength = 0;
+		minDistance = Integer.MAX_VALUE;
+		path= new ArrayList<>();
 	} // end of SimpleList()
 	
-	public MyLinkedList(T value) {
-		//mHead = new Node<T>(value);
-		//mLength++;
-		Vertex = new Node<T>(value);
-	}
-
+	
 	/**
 	 * Add a new value to the start of the list.
 	 * 
 	 * @param newValue
 	 *            Value to add to list.
 	 */
-	public void add(T newValue) {
-		Node<T> newNode = new Node<T>(newValue);
+
+	public void add(Object newValue) {
+		Node<Object> newNode = new Node<Object>(newValue);
 		
 		// If head is empty, then list is empty and head reference need to be
 		// initialised.
@@ -62,12 +58,12 @@ public class MyLinkedList<T> {
 	 * @throws IndexOutOfBoundsException
 	 *             In index are out of bounds.
 	 */
-	public void add(int index, T newValue) throws IndexOutOfBoundsException {
+	public void add(int index, Object newValue) throws IndexOutOfBoundsException {
 		if (index >= mLength || index < 0) {
 			 
 		}
 
-		Node<T> newNode = new Node<T>(newValue);
+		Node<Object> newNode = new Node<Object>(newValue);
 
 		if (mHead == null) {
 			mHead = newNode;
@@ -75,7 +71,7 @@ public class MyLinkedList<T> {
 		}
 		// list is not empty
 		else {
-			Node<T> currNode = mHead;
+			Node<Object> currNode = mHead;
 			for (int i = 0; i < index - 1; ++i) {
 				currNode = currNode.getNext();
 			}
@@ -97,12 +93,12 @@ public class MyLinkedList<T> {
 	 * @throws IndexOutOfBoundsException
 	 *             In index are out of bounds.
 	 */
-	public T get(int index) throws IndexOutOfBoundsException {
+	public Object get(int index) throws IndexOutOfBoundsException {
 		if (index >= mLength || index < 0) {
 			throw new IndexOutOfBoundsException("Supplied index is invalid.");
 		}
 
-		Node<T> currNode = mHead;
+		Node<Object> currNode = mHead;
 		for (int i = 0; i < index; ++i) {
 			currNode = currNode.getNext();
 		}
@@ -117,8 +113,8 @@ public class MyLinkedList<T> {
 	 *            Value to search for.
 	 * @return True if value is in list, otherwise false.
 	 */
-	public boolean search(T value) {
-		Node<T> currNode = mHead;
+	public boolean search(Object value) {
+		Node<Object> currNode = mHead;
 		for (int i = 0; i < mLength; ++i) {
 			if (currNode.getValue().equals(value)) {
 				return true;
@@ -129,7 +125,7 @@ public class MyLinkedList<T> {
 		return false;
 	} // end of search()
 	
-	public int searchlocation(T value) {
+	public int searchlocation(Object value) {
 		Node currNode = mHead;
 		for (int i = 0; i < mLength; ++i) {
 			if (currNode.getValue().equals(value)) {
@@ -150,7 +146,7 @@ public class MyLinkedList<T> {
 	 * @return True if deletion was successful, otherwise false.
 	 */
 	
-	public void removevalue(T key)
+	public void removevalue(Object key)
 	   {
 	      if(mHead == null)
 	         throw new RuntimeException("cannot delete");
@@ -161,8 +157,8 @@ public class MyLinkedList<T> {
 	         return;
 	      }
 
-	      Node<T> cur  = mHead;
-	      Node<T> prev = null;
+	      Node<Object> cur  = mHead;
+	      Node<Object> prev = null;
 
 	      while(cur != null && !cur.mValue.equals(key) )
 	      {
@@ -178,15 +174,15 @@ public class MyLinkedList<T> {
 	   }
 	
 	
-	public boolean remove(T value) {
+	public boolean remove(Object value) {
 		// YOUR IMPLEMENTATION
 
 		if (mLength == 0) {
 			return false;
 		}
 
-		Node<T> currNode = mHead;
-		Node<T>	 prevNode = null;
+		Node<Object> currNode = mHead;
+		Node<Object> prevNode = null;
 
 		// check if value is head node
 		if (currNode.getValue().equals(value)) {
@@ -224,19 +220,19 @@ public class MyLinkedList<T> {
 	 *            overloaded methods.
 	 * @return Value of node that was deleted.
 	 */
-	public T remove(int index, boolean dummy) throws IndexOutOfBoundsException {
+	public Object remove(int index, boolean dummy) throws IndexOutOfBoundsException {
 		// YOUR IMPLEMENTATION
 		if (index >= mLength || index < 0) {
 			throw new IndexOutOfBoundsException("Supplied index is invalid.");
 		}
 
-		Node<T> currNode = mHead;
-		Node<T> prevNode = null;
+		Node<Object> currNode = mHead;
+		Node<Object> prevNode = null;
 
-		T value;
+		Object value;
 		// deleting head
 		if (index == 0) {
-			value = (T) currNode.getValue();
+			value = (Object) currNode.getValue();
 			mHead = currNode.getNext();
 		} else {
 			for (int i = 0; i < index; ++i) {
@@ -244,7 +240,7 @@ public class MyLinkedList<T> {
 				currNode = currNode.getNext();
 			}
 
-			value = (T) currNode.getValue();
+			value = (Object) currNode.getValue();
 			prevNode.setNext(currNode.getNext());
 			currNode = null;
 		}
@@ -342,7 +338,7 @@ public class MyLinkedList<T> {
 	 * @return String representation of the list.
 	 */
 	public String toString() {
-		Node<T> currNode = mHead;
+		Node<Object> currNode = mHead;
 
 		StringBuffer str = new StringBuffer();
 
@@ -354,13 +350,10 @@ public class MyLinkedList<T> {
 		return str.toString();
 	} // end of getString();
 	
-	public T getVertex(){
-		return Vertex.getValue();
-	}
 	
-    public ArrayList<T> neighbours() {
-        ArrayList<T> neighbours = new ArrayList<T>();
-        Node<T> currNode = mHead;
+    public ArrayList<Object> neighbours() {
+        ArrayList<Object> neighbours = new ArrayList<Object>();
+        Node<Object> currNode = mHead;
         
         for(int i=0;i< mLength;i++){
         		neighbours.add(currNode.getValue());
@@ -376,32 +369,32 @@ public class MyLinkedList<T> {
 	 * Node type, inner private class.
 	 */
 	@SuppressWarnings("hiding")
-	private class Node<T> {
+	private class Node<Object> {
 		/** Stored value of node. */
-		protected T mValue;
+		protected Object mValue;
 		/** Reference to next node. */
-		protected Node<T> mNext;
+		protected Node<Object> mNext;
 
 
-		public Node(T value) {
+		public Node(Object value) {
 			mValue = value;
 			mNext = null;
 		}
 
-		public T getValue() {
+		public Object getValue() {
 			return mValue;
 		}
 
-		public Node<T> getNext() {
+		public Node<Object> getNext() {
 			return mNext;
 		}
 
 		@SuppressWarnings("unused")
-		public void setValue(T value) {
+		public void setValue(Object value) {
 			mValue = value;
 		}
 
-		public void setNext(Node<T> next) {
+		public void setNext(Node<Object> next) {
 			mNext = next;
 		}
 		

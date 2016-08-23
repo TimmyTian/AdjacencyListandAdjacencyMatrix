@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 {
 	private Map<T, Integer> nodeMap;
+	private Map<Integer, T> nodeMapReverse;
 	private static final int GRAPH_SIZE = 10;
 	private static int counter = 0;
 	int[][] adjmatrix;
@@ -21,6 +22,7 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 	 */
 	public AdjMatrix() {
 		nodeMap = new HashMap<>();
+		nodeMapReverse = new HashMap<>();
 		adjmatrix = new int[GRAPH_SIZE][GRAPH_SIZE];  //TO DO check in lab for size of an array
 		for (int i = 0; i < adjmatrix.length; i++) {
 			for (int j = 0; j < adjmatrix[i].length; j++) {
@@ -33,6 +35,7 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 	public void addVertex(T vertLabel) {
 		if(!nodeMap.containsKey(vertLabel)){
 			nodeMap.put(vertLabel,counter);
+			nodeMapReverse.put(counter,vertLabel);
 			counter++;
 		}
 
@@ -78,38 +81,62 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 
 	public ArrayList<T> neighbours(T vertLabel) {
 		ArrayList<T> neighbours = new ArrayList<T>();
-
 		// Implement me!
-
+		int vertex = nodeMap.get(vertLabel);
+		for(int i=0;i<counter;i++){
+			if(adjmatrix[vertex][i]==1){
+				neighbours.add(nodeMapReverse.get(i));
+			}
+		}
+		
+		
 		return neighbours;
 	} // end of neighbours()
 
 
 	public void removeVertex(T vertLabel) {
 		// Implement me!
+		int vertex = nodeMap.get(vertLabel);
+		for(int i=0;i<counter;i++){
+		adjmatrix[vertex][i] = 0;
+		adjmatrix[i][vertex] = 0;
+		}
+		nodeMap.remove(vertLabel);
+		nodeMapReverse.remove(vertex);
 	} // end of removeVertex()
 
 
 	public void removeEdge(T srcLabel, T tarLabel) {
 		// Implement me!
+		int srcInt = nodeMap.get(srcLabel);
+		int tarInt = nodeMap.get(tarLabel);
+		adjmatrix[srcInt][tarInt] = 0;
+		adjmatrix[tarInt][srcInt] = 0;
 	} // end of removeEdges()
 
 
 	public void printVertices(PrintWriter os) {
-		String abc = null;
-    	for(Entry<T, Integer> e: nodeMap.entrySet()) {
-    		if(abc==null){
-    			abc = ""+e.getKey();
-    		}else{
-    			abc = abc + " "+ e.getKey();
-    		}
-    	}
-    	os.println(abc);
+		for(Entry<T, Integer> e: nodeMap.entrySet()) {
+			os.print(e.getKey()+" ");
+		}
+		os.println("");
 	} // end of printVertices()
 
 
 	public void printEdges(PrintWriter os) {
 		// Implement me!
+		for(Entry<T, Integer> e: nodeMap.entrySet()) {
+			int srcvertex = e.getValue();
+			
+			for(Entry<T, Integer> f: nodeMap.entrySet()) {
+				int tarvertex = f.getValue();
+				
+				if(srcvertex != tarvertex){
+					if(adjmatrix[srcvertex][tarvertex]==1)
+						os.println(e.getKey() +" "+ f.getKey());
+				}
+	    	}
+    	}
 	} // end of printEdges()
 
 
