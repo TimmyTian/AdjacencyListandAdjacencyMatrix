@@ -29,18 +29,16 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
     	
     	if(!vertlabels.containsKey(vertLabel))
     		vertlabels.put(vertLabel, new MyLinkedList<T>());
+    	if(vertlabels.containsKey(vertLabel))
+    		return;
     	
     	// Implement me!
     } // end of addVertex()
 	
     
-    public void addEdge(T srcLabel, T tarLabel) {
-	        if(!vertlabels.containsKey(srcLabel)){
-	        	vertlabels.put(srcLabel, new MyLinkedList<T>());
-	        }
-	        if(!vertlabels.containsKey(tarLabel)){
-	        	vertlabels.put(tarLabel, new MyLinkedList<T>());
-	        }
+    public void addEdge(T srcLabel, T tarLabel) throws IllegalArgumentException {
+	        if(!vertlabels.containsKey(srcLabel) || !vertlabels.containsKey(tarLabel))
+	        	throw new IllegalArgumentException("The vertex does not exist");
 	        
 	        if(vertlabels.containsKey(srcLabel) && !vertlabels.get(srcLabel).search(tarLabel)){
 	        	vertlabels.get(srcLabel).add(tarLabel);
@@ -48,6 +46,7 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
 	        if(vertlabels.containsKey(tarLabel) && !vertlabels.get(tarLabel).search(srcLabel)){
 	        	vertlabels.get(tarLabel).add(srcLabel);
 	        }
+	        
 
         //if srclabel and tarlabel exist then throw exception
        // otherwise add edge between them
@@ -57,26 +56,35 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
     } // end of addEdge()
 	
 
-    public ArrayList<T> neighbours(T vertLabel) {
+    public ArrayList<T> neighbours(T vertLabel) throws IllegalArgumentException {
+    	if(!vertlabels.containsKey(vertLabel))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");    	
+    	
     	return vertlabels.get(vertLabel).neighbours();
         // Implement me!
     } // end of neighbours()
     
     
-    public void removeVertex(T vertLabel) {
-       if(vertlabels.containsKey(vertLabel))
-       {
+    public void removeVertex(T vertLabel) throws IllegalArgumentException {
+    	if(!vertlabels.containsKey(vertLabel))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");
+    
+    	if(vertlabels.containsKey(vertLabel))
+    	{
     	  for(T neighbours:vertlabels.get(vertLabel).neighbours()){
     		  if(vertlabels.containsKey(neighbours))
     			  vertlabels.get(neighbours).remove(vertLabel);
     	  }
     	   vertlabels.remove(vertLabel);
-       }
+    	}
     	// Implement me!
     } // end of removeVertex()
 	
     
-    public void removeEdge(T srcLabel, T tarLabel) {    	
+    public void removeEdge(T srcLabel, T tarLabel) throws IllegalArgumentException {
+    	if(!vertlabels.containsKey(srcLabel) || !vertlabels.containsKey(tarLabel))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");
+    	
     	if(vertlabels.containsKey(srcLabel))
     		vertlabels.get(srcLabel).remove(tarLabel);
     	if(vertlabels.containsKey(tarLabel))
@@ -111,12 +119,14 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
     
     
     
-	public int shortestPathDistance(T vertLabel1, T vertLabel2){
+	public int shortestPathDistance(T vertLabel1, T vertLabel2) throws IllegalArgumentException {
 		// Algo:
 		// 1. Take the unvisited node with minimum weight.
 		// 2. Visit all its neighbours.
 		// 3. Update the distances for all the neighbours (In the Priority Queue).
 		// Repeat the process till all the connected nodes are visited.
+		if(!vertlabels.containsKey(vertLabel1) || !vertlabels.containsKey(vertLabel2))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");
 		
 		for(Entry<T, MyLinkedList<T>> e: vertlabels.entrySet()) {
     		e.getValue().minDistance = Integer.MAX_VALUE;
@@ -155,65 +165,8 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
 			return vertlabels.get(vertLabel2).minDistance;
 		
 	}
+	// end of shortestPathDistance()
     
-	 public int shortestPathDistance3(T vertLabel1, T vertLabel2) {	
-	
-		ArrayList<T> shortestPathList = new ArrayList<T>();
-		HashMap<T, Boolean> visited = new HashMap<T, Boolean>();
 
-		if (vertLabel1 == vertLabel2)
-			return disconnectedDist;
-		Queue<T> queue = new LinkedList<T>();
-		Stack<T> pathStack = new Stack<T>();
-
-		queue.add(vertLabel1);
-		pathStack.add(vertLabel1);
-		visited.put(vertLabel1, true);
-		
-		while(!queue.isEmpty())
-		{
-			T u = queue.poll();
-			ArrayList<T> adjList = neighbours(u);
-			for(T v : adjList)
-			{	
-				if(!visited.containsKey(v))
-				{
-					queue.add(v);
-					visited.put(v, true);
-					pathStack.add(v);
-					if(u == vertLabel2)
-						break;
-				}
-			}
-		}
-		
-		
-		//To find the path
-		T node, currentSrc=vertLabel2;
-		shortestPathList.add(vertLabel2);
-		while(!pathStack.isEmpty())
-		{
-			node = pathStack.pop();
-			if(vertlabels.get(currentSrc).search(node))
-			{
-				shortestPathList.add(node);
-				currentSrc = node;
-				if(node == vertLabel1)
-					break;
-			}
-		}
-    	
-		if(shortestPathList.size()>1){
-			return shortestPathList.size()-1;
-		}else{       
-    	// Implement me!
-    	
-        // if we reach this point, source and target are disconnected
-        return disconnectedDist;
-		}
-		
-    } // end of shortestPathDistance()
-    
-    
 	 
 } // end of class AdjList

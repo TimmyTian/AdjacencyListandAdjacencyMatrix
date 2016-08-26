@@ -14,7 +14,7 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 {
 	private Map<T, Integer> nodeMap;
 	private Map<Integer, T> nodeMapReverse;
-	private static final int GRAPH_SIZE = 10;
+	private static final int GRAPH_SIZE = 4096;
 	private static int counter = 0;
 	int[][] adjmatrix;
 	/**
@@ -38,50 +38,31 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 			nodeMapReverse.put(counter,vertLabel);
 			counter++;
 		}
-
+		if(nodeMap.containsKey(vertLabel))
+    		return;
 	} // end of addVertex()
 
 
-	public void addEdge(T srcLabel, T tarLabel) {
+	public void addEdge(T srcLabel, T tarLabel) throws IllegalArgumentException {
+		if(!nodeMap.containsKey(srcLabel) || !nodeMap.containsKey(tarLabel))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");
+		
 		int srcInt = nodeMap.get(srcLabel);
 		int tarInt = nodeMap.get(tarLabel);
 		adjmatrix[srcInt][tarInt] = 1;
 		adjmatrix[tarInt][srcInt] = 1;
 		
-//		Node distance;
-//		if(srcLabel != tarLabel){
-//			if(nodeMap.containsKey(srcLabel) && !nodeMap.get(srcLabel).search(tarLabel)){
-//				nodeMap.get(srcLabel).add(tarLabel);
-//			}
-//			if(nodeMap.containsKey(tarLabel) && !nodeMap.get(tarLabel).search(srcLabel)){
-//				nodeMap.get(tarLabel).add(srcLabel);
-//			}
-			// Node[srcLabel][tarLabel]=distance;
-			// Node[tarLabel][srcLabel]=distance;
-		//}
 		// Implement me!
 	} // end of addEdge()
 
 
-//	public String toString() {
-//		int numberOfVertices = adjmatrix.length;
-//		String result = "";
-//
-//		// For Adjacency Matrix
-//		for (int j = 0, k = 0; j < numberOfVertices; j++) {
-//			result += j + ":";
-//			for (k = j; k < numberOfVertices; k++) {
-//				if (adjmatrix[j][k] != null) {
-//					result += " (" + k + "," + adjmatrix[j][k] + ")";
-//				}
-//			}
-//		}
-//		return toString();
-//	}
 
-	public ArrayList<T> neighbours(T vertLabel) {
+
+	public ArrayList<T> neighbours(T vertLabel) throws IllegalArgumentException  {
+		if(!nodeMap.containsKey(vertLabel))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");
+		
 		ArrayList<T> neighbours = new ArrayList<T>();
-		// Implement me!
 		int vertex = nodeMap.get(vertLabel);
 		for(int i=0;i<counter;i++){
 			if(adjmatrix[vertex][i]==1){
@@ -94,8 +75,10 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 	} // end of neighbours()
 
 
-	public void removeVertex(T vertLabel) {
-		// Implement me!
+	public void removeVertex(T vertLabel) throws IllegalArgumentException  {
+		if(!nodeMap.containsKey(vertLabel))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");
+		
 		int vertex = nodeMap.get(vertLabel);
 		for(int i=0;i<counter;i++){
 		adjmatrix[vertex][i] = 0;
@@ -106,8 +89,10 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 	} // end of removeVertex()
 
 
-	public void removeEdge(T srcLabel, T tarLabel) {
-		// Implement me!
+	public void removeEdge(T srcLabel, T tarLabel) throws IllegalArgumentException  {
+		if(!nodeMap.containsKey(srcLabel) || !nodeMap.containsKey(tarLabel))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");
+		
 		int srcInt = nodeMap.get(srcLabel);
 		int tarInt = nodeMap.get(tarLabel);
 		adjmatrix[srcInt][tarInt] = 0;
@@ -139,12 +124,63 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
     	}
 	} // end of printEdges()
 
-
-	public int shortestPathDistance(T vertLabel1, T vertLabel2) {
+	
+	public int shortestPathDistance(T vertLabel1, T vertLabel2) throws IllegalArgumentException {
 		// Implement me!
+		if(!nodeMap.containsKey(vertLabel1) || !nodeMap.containsKey(vertLabel2))
+    		throw new IllegalArgumentException("The Vertex doesn't exist");
+		
+		int src = nodeMap.get(vertLabel1);
+		int dest = nodeMap.get(vertLabel2);
+		
+		int distance[] = new int[counter]; // The output array. dist[i] will hold
+        // the shortest distance from src to i
 
-		// if we reach this point, source and target are disconnected
-		return disconnectedDist;    	
+		// sptSet[i] will true if vertex i is included in shortest
+		// path tree or shortest distance from src to i is finalized
+		Boolean sptSet[] = new Boolean[counter];
+		
+		// Initialize all distances as INFINITE and stpSet[] as false
+		for (int i = 0; i < counter; i++){
+		distance[i] = Integer.MAX_VALUE;
+		sptSet[i] = false;
+		}
+		
+		// Distance of source vertex from itself is always 0
+		distance[src] = 0;
+		
+		// Find shortest path for all vertices
+		for (int count = 0; count < counter-1; count++)
+		{
+			// Pick the minimum distance vertex from the set of vertices
+			// not yet processed. u is always equal to src in first
+			// iteration.
+				
+			int min = Integer.MAX_VALUE, min_index=-1;
+				 
+		    for (int v = 0; v < counter; v++)
+		       if (sptSet[v] == false && distance[v] <= min){
+		         min = distance[v];
+		         min_index = v;
+		       }
+		        
+			int u = min_index;
+			
+			// Mark the picked vertex as processed
+			sptSet[u] = true;
+			
+			// Update dist value of the adjacent vertices of the
+			// picked vertex.
+			for (int v = 0; v < counter; v++)
+				if (!sptSet[v] && adjmatrix[u][v]!=0 && distance[u] != Integer.MAX_VALUE && distance[u]+adjmatrix[u][v] < distance[v])
+					distance[v] = distance[u] + adjmatrix[u][v];
+			}
+			
+			// print the constructed distance array
+			if(distance[dest]>0 && distance[dest]!=Integer.MAX_VALUE)
+		    	return distance[dest];
+		    else
+		    	return disconnectedDist;   	
 	} // end of shortestPathDistance()
 
 } // end of class AdjMatrix
