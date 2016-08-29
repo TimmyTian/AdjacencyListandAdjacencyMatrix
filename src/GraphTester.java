@@ -50,6 +50,7 @@ public class GraphTester
 		int lineNum = 1;
 		boolean bQuit = false;
 		
+		long startTime = System.nanoTime();  //changed this line here
 		// continue reading in commands until we either receive the quit signal or there are no more input commands
 		while (!bQuit && (line = inReader.readLine()) != null) {
 			String[] tokens = line.split(" ");
@@ -64,6 +65,8 @@ public class GraphTester
 			String command = tokens[0];
 			
 			try {
+				  
+			      
 				// determine which operation to execute
 				switch (command.toUpperCase()) {
 					// add vertex
@@ -142,6 +145,7 @@ public class GraphTester
 					default:
 						System.err.println(lineNum + ": Unknown command.");
 				} // end of switch()
+				 
 			} 
 			catch (IllegalArgumentException e) {
 				System.err.println(e.getMessage());
@@ -149,7 +153,10 @@ public class GraphTester
 
 			lineNum++;
 		}
-
+		 long endTime = System.nanoTime();//changed this line here
+	        
+		/*changed this line here*/  System.out.println("time taken = " + ((double)(endTime - startTime)) / Math.pow(10, 9) + " sec");
+	   
 	} // end of processOperations() 
 
 
@@ -209,7 +216,9 @@ public class GraphTester
 
 		
 		// determine which implementation to test
+		// long startTime = System.nanoTime();
 		FriendshipGraph<String> graph = null;
+		
 		switch(implementationType) {
 			case "adjlist":
 				graph = new AdjList<String>();
@@ -223,7 +232,12 @@ public class GraphTester
 			default:
 				System.err.println("Unknown implmementation type.");
 				usage(progName);
+		
 		}
+//		 long endTime = System.nanoTime();
+//	        
+//		  System.out.println("time taken = " + ((double)(endTime - startTime)) / Math.pow(10, 9) + " sec");
+		   
 		
 		
 		// if file specified, then load file
