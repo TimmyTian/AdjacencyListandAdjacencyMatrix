@@ -37,6 +37,7 @@ public class AdjList <T extends Object> implements FriendshipGraph<T>
 	
     
     public void addEdge(T srcLabel, T tarLabel) throws IllegalArgumentException {
+
 	        if(!vertlabels.containsKey(srcLabel) || !vertlabels.containsKey(tarLabel))
 	        	throw new IllegalArgumentException("The vertex does not exist");
 	        
