@@ -275,7 +275,6 @@ public class GraphTester
 		
 		// if file specified, then load file
 		if (inputFilename != null) {
-		
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(inputFilename));
 				
@@ -291,13 +290,16 @@ public class GraphTester
 		    		graph.addVertex(srcLabel);
 		    		graph.addVertex(tarLabel);
 		    		graph.addEdge(srcLabel, tarLabel);
+		    		
 		    	}			
 			}
 			catch (FileNotFoundException ex) {
 				System.err.println("File " + args[1] + " not found.");
+				System.out.println("file name = " + inputFilename + "not found");
 			}
 			catch(IOException ex) {
 				System.err.println("Cannot open file " + args[1]);
+				System.out.println("Cannot open file name = " + inputFilename);
 			}
 		}
 

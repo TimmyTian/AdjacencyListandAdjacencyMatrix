@@ -281,7 +281,7 @@ public class DataGenerator
 			usage();
 			//int n = 40000;
 	        
-	        long startTime = System.nanoTime();
+	        
 	        FriendshipGraph<String> graph = null;
 			switch(implementationType) {
 				case "adjlist":
@@ -297,9 +297,6 @@ public class DataGenerator
 					System.err.println("Unknown implmementation type.");
 					usage(progName);
 			
-	        long endTime = System.nanoTime();
-	        
-	        System.out.println("time taken = " + ((double)(endTime - startTime)) / Math.pow(10, 9) + " sec");
 	    } // end of main()
 
 		
