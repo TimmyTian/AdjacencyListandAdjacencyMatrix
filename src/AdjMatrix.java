@@ -14,7 +14,7 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 {
 	private Map<T, Integer> nodeMap;
 	private Map<Integer, T> nodeMapReverse;
-	private static final int GRAPH_SIZE = 4096;
+	private static int GRAPH_SIZE = 8;// 4096;
 	private static int counter = 0;
 	int[][] adjmatrix;
 	/**
@@ -33,6 +33,24 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 
 
 	public void addVertex(T vertLabel) {
+		// for increasing the graph size if graph size is less than counter
+		if(counter >= GRAPH_SIZE){
+			int[][] tempmatrix = new int[GRAPH_SIZE*GRAPH_SIZE][GRAPH_SIZE*GRAPH_SIZE];
+			
+			for (int i = 0; i < tempmatrix.length; i++) {
+				for (int j = 0; j < tempmatrix[i].length; j++) {
+					if(i< GRAPH_SIZE && j < GRAPH_SIZE){
+						tempmatrix[i][j] = adjmatrix[i][j];
+					}else
+						tempmatrix[i][j] = 0;
+				}
+			}
+			
+			adjmatrix = tempmatrix;
+			GRAPH_SIZE = GRAPH_SIZE*GRAPH_SIZE;
+			
+		}
+		
 		if(!nodeMap.containsKey(vertLabel)){
 			nodeMap.put(vertLabel,counter);
 			nodeMapReverse.put(counter,vertLabel);
