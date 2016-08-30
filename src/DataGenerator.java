@@ -1,349 +1,127 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-
 /**
- * Generates collection of integers from sampling a uniform distribution.
- * 
- * @author jkcchan
- * 
+ * Created by Bijin on 30-Mar-16.
  */
-
-
 public class DataGenerator
 {
-	/** Program name. */
-	protected static final String progName = "DataGenerator";
-	
-	/** Start of integer range to generate values from. */
-	protected int mStartOfRange;
-	/** End of integer range to generate values from. */
-	protected int mEndOfRange;
-	/** Random generator to use. */
-	Random mRandGen;
-	
-	public static void usage(String progName) {
-		System.err.println(progName + ": <implementation> [-f <filename to load graph>] [filename to print vertices] [filename to print edges] [filename to print neighbours] [filename to print shortest path distances]");
-		System.err.println("<implementation> = <adjlist | adjmat | sample>");
-		System.err.println("If all four optional output filenames are specified, then non-interative mode will be used and respective output is written to those files.  Otherwise interative mode is assumed and output is written to System.out.");
-		System.exit(1);
-	} // end of usage
+    private final int LENGTH;
+    private final int NO_OF_ADD_STATEMENTS;
+    private final int NO_OF_REMOVE_STATEMENTS;
+    private final int NO_OF_SEARCH_STATEMENTS;
+    private String[] words;
+    private final PrintWriter writer;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param startOfRange Start of integer range to generate values.
-	 * @param endOfRange End of integer range to generate values.
-	 * @throws IllegalArgumentException If range of integers is inappropriate
-	 */
-	public DataGenerator(int startOfRange, int endOfRange) throws IllegalArgumentException {
-		if (startOfRange < 0 || endOfRange < 0 || startOfRange > endOfRange) {
-			throw new IllegalArgumentException("startOfRange or endOfRange is invalid.");
-		}
-		mStartOfRange = startOfRange;
-		mEndOfRange = endOfRange;
-		// use current time as seed
-		mRandGen = new Random(System.currentTimeMillis());
-	} // end of DataGenerator()
-	
-	
-	/**
-	 * Generate one sample, using sampling with replacement.
-	 */
-	public int sampleWithReplacement() {
-		return mRandGen.nextInt(mEndOfRange - mStartOfRange + 1) + mStartOfRange;
-	} // end of sampleWithReplacement()
-	
-	
-	/**
-	 * Generate 'sampleSize' number of samples, using sampling with replacement.
-	 * 
-	 * @param sampleSize Number of samples to generate.
-	 */
-	public int[] sampleWithReplacement(int sampleSize) {
-		int[] samples = new int[sampleSize];
-		
-		for (int i = 0; i < sampleSize; i++) {
-			samples[i] = sampleWithReplacement();
-		}
-		
-		return samples;
-	} // end of sampleWithReplacement()
-	
-	
-	/**
-	 * Sample without replacement, using "Algorithm R" by Jeffrey Vitter, in paper "Random sampling without a reservoir".
-	 * This algorithm has O(size of range) time complexity.
-	 * 
-	 * @param sampleSize Number of samples to generate.
-	 * @throws IllegalArgumentException When sampleSize is greater than the valid integer range.
-	 */
-	public int[] sampleWithOutReplacement(int sampleSize) throws IllegalArgumentException {
-	    int populationSize = mEndOfRange - mStartOfRange + 1;
-	    
-	    if (sampleSize > populationSize) {
-	    	throw new IllegalArgumentException("SampleSize cannot be greater than populationSize for sampling without replacement.");
-	    }
-	    
-	    int[] samples = new int[sampleSize];
-	    // fill it with initial values in the range
-	    for (int i = 0; i < sampleSize; i++) {
-	    	samples[i] = i + mStartOfRange;
-	    }
-	    
-	    // replace
-	    for (int j = sampleSize; j < populationSize; j++) {
-	    	int t = mRandGen.nextInt(j+1);
-	    	if (t < sampleSize) {
-	    		samples[t] = j + mStartOfRange;
-	    	}
-	    }
-
-	   return samples;
-	} // end of sampleWithOutReplacement()
-	
-	
-	/**
-	 * Error message.
-	 */
-	public static void usage() {
-		System.err.println(progName + ": <start of range to sample from> <end of range to sample from> <number of values to sample> <type of sampling>");
-		System.exit(1);
-	} // end of usage()
-	
-	
-	/**
-	 * Main method.
-	 */
-	public static void processOperations(BufferedReader inReader, FriendshipGraph<String> graph,
-			PrintWriter verticesOutWriter, PrintWriter edgesOutWriter, PrintWriter neighbourOutWriter, PrintWriter distanceOutWriter) 
-		throws IOException
-	{
-		String line;
-		int lineNum = 1;
-		boolean bQuit = false;
-		
-		// continue reading in commands until we either receive the quit signal or there are no more input commands
-		while (!bQuit && (line = inReader.readLine()) != null) {
-			String[] tokens = line.split(" ");
-
-			// check if there is at least an operation command
-			if (tokens.length < 1) {
-				System.err.println(lineNum + ": not enough tokens.");
-				lineNum++;
-				continue;
-			}
+    public DataGenerator(int length, int no_of_add_statements,
+                         int no_of_remove_statements,
+                         int no_of_search_statements) throws IOException
+    {
+        LENGTH = length;
+        NO_OF_ADD_STATEMENTS = no_of_add_statements;
+        NO_OF_REMOVE_STATEMENTS = no_of_remove_statements;
+        NO_OF_SEARCH_STATEMENTS = no_of_search_statements;
+        writer = new PrintWriter(
+                new BufferedWriter(new FileWriter(findTestFile(), true)));
+        words = new String[LENGTH];
+        initialise();
 
 
-		String command = tokens[0];
-		
-		try {
-			// determine which operation to execute
-			switch (command.toUpperCase()) {
-				// add vertex
-				case "AV":
-					if (tokens.length == 2) {
-						graph.addVertex(tokens[1]);
-					}
-					else {
-						System.err.println(lineNum + ": incorrect number of tokens.");
-					}
-					break;
-                // add edge
-				case "AE":
-					if (tokens.length == 3) {
-						graph.addEdge(tokens[1], tokens[2]);
-					}
-					else {
-						System.err.println(lineNum + ": incorrect number of tokens.");
-					}
-					break;                                    
-				// neighbourhood
-				case "N":
-					if (tokens.length == 2) {
-						ArrayList<String> neighbours = graph.neighbours(tokens[1]);
-						StringBuffer buf = new StringBuffer();
-						for (String neigh : neighbours) {
-							buf.append(" " + neigh);
-						}
-						
-						neighbourOutWriter.println(tokens[1] + buf.toString());
-					}
-					else {
-						System.err.println(lineNum + ": incorrect number of tokens.");
-					}
-
-					break;
-				// remove vertex
-				case "RV":
-					if (tokens.length == 2) {
-						graph.removeVertex(tokens[1]);
-					}
-					else {
-						System.err.println(lineNum + ": incorrect number of tokens.");
-					}
-					break;
-				// remove edge
-				case "RE":
-					if (tokens.length == 3) {
-						graph.removeEdge(tokens[1], tokens[2]);
-					}
-					else {
-						System.err.println(lineNum + ": incorrect number of tokens.");
-					}
-					break;		
-				// compute shortest path distance
-				case "S":
-					if (tokens.length == 3) {
-						distanceOutWriter.println(tokens[1] + " " + tokens[2] + " " + graph.shortestPathDistance(tokens[1], tokens[2]));
-					}
-					else {
-						System.err.println(lineNum + ": incorrect number of tokens.");
-					}
-					break;							
-				// print vertices
-				case "V":
-					graph.printVertices(verticesOutWriter);
-					break;
-                // print edges
-				case "E":
-					graph.printEdges(edgesOutWriter);
-					break;                                    
-				// quit
-				case "Q":
-					bQuit = true;
-					break;
-				default:
-					System.err.println(lineNum + ": Unknown command.");
-			} // end of switch()
-		} 
-		catch (IllegalArgumentException e) {
-			System.err.println(e.getMessage());
-		}
-
-		lineNum++;
-	}
-
-} // end of processOperations() 
+    }
 
 
-	
-	
-	        
+    public static void usage()
+    {
+        System.err.println("DataGenerator <Sample size (int)> " +
+                "<Number of add statements (int)> " +
+                "<Number of remove statements (int)> " +
+                "<Number of search statements (int)> ");
+        System.exit(1);
+    }
 
-	public static void main(String[] args) {
-		// parse command line options
-				OptionParser parser = new OptionParser("f:");
-				OptionSet options = parser.parse(args);
-				
-				String inputFilename = null;
-				// -f <inputFilename> specifies the file that contains edge list information to construct the initial graph with.
-				if (options.has("f")) {
-					if (options.hasArgument("f")) {
-						inputFilename = (String) options.valueOf("f");
-					}
-					else {
-						System.err.println("Missing filename argument for -f option.");
-						usage(progName);
-					}
-				}
-				
-				// non option arguments
-				List<?> tempArgs = options.nonOptionArguments();
-				List<String> remainArgs = new ArrayList<String>();
-				for (Object object : tempArgs) {
-					remainArgs.add((String) object);
-				}
-				
-				// check number of non-option command line arguments
-				if (remainArgs.size() > 5 || remainArgs.size() < 1) {
-					System.err.println("Incorrect number of arguments.");
-					usage(progName);
-				}
-				
-				// parse non-option arguments
-				String implementationType = remainArgs.get(0);
-				
-				
-	
-		
-//		String verticesOutFilename = null;
-//		String edgesOutFilename = null;
-//		String neighbourOutFilename = null;
-//		String distanceOutFilename = null;
-//		
-		// check correct number of command line arguments
-		if (args.length != 4) {
-			usage();
-			//int n = 40000;
-	        
-	        
-	        FriendshipGraph<String> graph = null;
-			switch(implementationType) {
-				case "adjlist":
-					graph = new AdjList<String>();
-					break;
-				case "adjmat":
-					graph = new AdjMatrix<String>();
-					break;
-			    case "sample":
-			    	graph = new SampleImplementation<String>();
-			    	break;
-				default:
-					System.err.println("Unknown implmementation type.");
-					usage(progName);
-			
-	    } // end of main()
+    private void addStatements() throws IOException
+    {
+        Random random = new Random();
+        for (int i = 0; i < NO_OF_ADD_STATEMENTS; i++)
+            writer.println("a " + words[random.nextInt(LENGTH)]);
+    }
 
-		
-		
-	
-		try {
-			// integer range
-			int startOfRange = Integer.parseInt(args[0]);
-			int endOfRange = Integer.parseInt(args[1]);
-			
-			// number of values to sample
-			int sampleSize = Integer.parseInt(args[2]);
-			
-			// type of sampling
-			String samplingType = args[3];
-			
-			DataGenerator gen = new DataGenerator(startOfRange, endOfRange);
-			
-			int[] samples = null;
-			switch (samplingType) {
-				// sampling with replacement
-				case "adjlist":
-					samples = gen.sampleWithReplacement(sampleSize);
-					break;
-				// sampling without replacement
-				case "adjmat":
-					samples = gen.sampleWithOutReplacement(sampleSize);
-					break;
-				default:
-					System.err.println(samplingType + " is an unknown sampling type.");
-					usage();
-			}
-			
-			// print out samples
-			if (samples != null) {
-				for (int i = 0; i < samples.length; i++) {
-					System.out.print(samples[i] + " ");
-				}
-				System.out.println("");
-			}
-			
-		}
-		catch (Exception e) {
-			System.err.println(e.getMessage());
-			usage();
-		}
-		
-	} // end of main()
-	}
-}// end of class DataGenerator
+    private void removeOneStatements() throws IOException
+    {
+        Random random = new Random();
+        for (int i = 0; i < NO_OF_REMOVE_STATEMENTS; i++)
+            writer.println("ro " + words[random.nextInt(LENGTH)]);
+    }
+
+    private void searchStatements() throws IOException
+    {
+        Random random = new Random();
+        for (int i = 0; i < NO_OF_SEARCH_STATEMENTS; i++)
+            writer.println("s " + words[random.nextInt(LENGTH)]);
+    }
+
+
+    private void initialise()
+    {
+        Random random = new Random();
+        for (int i = 0; i < LENGTH; i++)
+        {
+            words[i] = "";
+            int wordLength = random.nextInt(3) + 3;
+            for (int j = 0; j < wordLength; j++)
+            {
+                words[i] += (char) (random.nextInt(26) + 'a');
+            }
+        }
+    }
+
+    private String findTestFile()
+    {
+        File testFile;
+        int fileIndex = 1;
+        do
+        {
+            testFile = new File("test" + fileIndex + ".in");
+            fileIndex++;
+        } while (testFile.isFile());
+
+        return testFile.getName();
+    }
+
+    public void closeWriter()
+    {
+        writer.close();
+    }
+
+    public static void main(String[] args)
+    {
+        if (args.length != 4)
+        {
+            usage();
+            System.exit(1);
+        }
+
+        try
+        {
+            DataGenerator dataGenerator =
+                    new DataGenerator(Integer.parseInt(args[0]),
+                            Integer.parseInt(args[1]),
+                            Integer.parseInt(args[2]),
+                            Integer.parseInt(args[3]));
+
+
+            dataGenerator.addStatements();
+            dataGenerator.removeOneStatements();
+            dataGenerator.searchStatements();
+            dataGenerator.closeWriter();
+        }
+
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage());
+            usage();
+        }
+
+    }
+
+}
