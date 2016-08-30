@@ -18,6 +18,17 @@ public class GraphTester
 	
 	/** Standard outstream. */
 	protected static final PrintStream outStream = System.out;
+	
+	static long starttime;
+	static long endtime;
+	static double addvertextime=0;
+	static double addedgetime=0;
+	static double removevertextime=0;
+	static double removeedgetime=0;
+	static double showneighbourstime=0;
+	static double showvertextime=0;
+	static double showedgetime=0;
+	static double shortestpathtime=0;
 
 	/**
 	 * Print help/usage message.
@@ -50,7 +61,6 @@ public class GraphTester
 		int lineNum = 1;
 		boolean bQuit = false;
 		
-		long startTime = System.nanoTime();  //changed this line here
 		// continue reading in commands until we either receive the quit signal or there are no more input commands
 		while (!bQuit && (line = inReader.readLine()) != null) {
 			String[] tokens = line.split(" ");
@@ -71,24 +81,31 @@ public class GraphTester
 				switch (command.toUpperCase()) {
 					// add vertex
 					case "AV":
+						starttime = System.nanoTime();
 						if (tokens.length == 2) {
 							graph.addVertex(tokens[1]);
 						}
 						else {
 							System.err.println(lineNum + ": incorrect number of tokens.");
 						}
+						endtime = System.nanoTime();
+						addvertextime+= ((double)(endtime - starttime)/ Math.pow(10, 9));
 						break;
 	                // add edge
 					case "AE":
+						starttime = System.nanoTime();
 						if (tokens.length == 3) {
 							graph.addEdge(tokens[1], tokens[2]);
 						}
 						else {
 							System.err.println(lineNum + ": incorrect number of tokens.");
 						}
+						endtime = System.nanoTime();
+						addedgetime+= ((double)(endtime - starttime)/ Math.pow(10, 9)); 
 						break;                                    
 					// neighbourhood
 					case "N":
+						starttime = System.nanoTime();
 						if (tokens.length == 2) {
 							ArrayList<String> neighbours = graph.neighbours(tokens[1]);
 							StringBuffer buf = new StringBuffer();
@@ -101,42 +118,58 @@ public class GraphTester
 						else {
 							System.err.println(lineNum + ": incorrect number of tokens.");
 						}
-
+						endtime = System.nanoTime();
+						showneighbourstime+= ((double)(endtime - starttime)/ Math.pow(10, 9));
 						break;
 					// remove vertex
 					case "RV":
+						starttime = System.nanoTime();
 						if (tokens.length == 2) {
 							graph.removeVertex(tokens[1]);
 						}
 						else {
 							System.err.println(lineNum + ": incorrect number of tokens.");
 						}
+						endtime = System.nanoTime();
+						removevertextime+= ((double)(endtime - starttime)/ Math.pow(10, 9));
 						break;
 					// remove edge
 					case "RE":
+						starttime = System.nanoTime();
 						if (tokens.length == 3) {
 							graph.removeEdge(tokens[1], tokens[2]);
 						}
 						else {
 							System.err.println(lineNum + ": incorrect number of tokens.");
 						}
+						endtime = System.nanoTime();
+						removeedgetime+= ((double)(endtime - starttime)/ Math.pow(10, 9));
 						break;		
 					// compute shortest path distance
 					case "S":
+						starttime = System.nanoTime();
 						if (tokens.length == 3) {
 							distanceOutWriter.println(tokens[1] + " " + tokens[2] + " " + graph.shortestPathDistance(tokens[1], tokens[2]));
 						}
 						else {
 							System.err.println(lineNum + ": incorrect number of tokens.");
 						}
+						endtime = System.nanoTime();
+						shortestpathtime+= ((double)(endtime - starttime)/ Math.pow(10, 9));
 						break;							
 					// print vertices
 					case "V":
+						starttime = System.nanoTime();
 						graph.printVertices(verticesOutWriter);
+						endtime = System.nanoTime();
+						showvertextime+= ((double)(endtime - starttime)/ Math.pow(10, 9));
 						break;
 	                // print edges
 					case "E":
+						starttime = System.nanoTime();
 						graph.printEdges(edgesOutWriter);
+						endtime = System.nanoTime();
+						showedgetime+= ((double)(endtime - starttime)/ Math.pow(10, 9));
 						break;                                    
 					// quit
 					case "Q":
@@ -153,9 +186,9 @@ public class GraphTester
 
 			lineNum++;
 		}
-		 long endTime = System.nanoTime();//changed this line here
+		 //changed this line here
 	        
-		/*changed this line here*/  System.out.println("time taken = " + ((double)(endTime - startTime)) / Math.pow(10, 9) + " sec");
+		/*changed this line here*/  
 	   
 	} // end of processOperations() 
 
@@ -301,6 +334,15 @@ public class GraphTester
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
+		
+		System.out.println("add vertex time = "+addvertextime*1000 + " milliseconds");
+		System.out.println("add edge time = "+addedgetime*1000 + " milliseconds");
+		System.out.println("remove vertex time = "+removevertextime*1000 + " milliseconds");
+		System.out.println("remove edge time = "+removeedgetime*1000 + " milliseconds");
+		System.out.println("shortest path time = "+shortestpathtime*1000 + " milliseconds");
+		System.out.println("show neighbour time = "+showneighbourstime*1000 + " milliseconds");
+		System.out.println("show vertex time = "+ showvertextime*1000 + " milliseconds");
+		System.out.println("show edge time = "+showedgetime*1000 + " milliseconds");
 
 	} // end of main()
 	
