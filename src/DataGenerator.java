@@ -1,30 +1,35 @@
 import java.io.*;
 import java.util.Random;
 
-/**
- * Created by Bijin on 30-Mar-16.
- */
 public class DataGenerator
 {
     private final int LENGTH;
-    private final int NO_OF_ADD_STATEMENTS;
-    private final int NO_OF_REMOVE_STATEMENTS;
-    private final int NO_OF_SEARCH_STATEMENTS;
-    private String[] words;
+    private final int NO_OF_ADD_EDGES;
+    private final int NO_OF_ADD_VERTEX;
+    private final int NO_OF_REMOVE_VERTEX;
+    private final int NO_OF_REMOVE_EDGES;
+    private final int NO_OF_SHORTEST_PATH;
+    private final int NO_OF_NEIGHBOURS;
+
     private final PrintWriter writer;
 
-    public DataGenerator(int length, int no_of_add_statements,
-                         int no_of_remove_statements,
-                         int no_of_search_statements) throws IOException
+    public DataGenerator(int length, int no_of_add_vertex,
+                         int no_of_add_edges,
+                         int no_of_remove_vertex,
+                         int no_of_remove_edges,
+                         int no_of_shortest_path,
+                         int no_of_neighbours) throws IOException
     {
         LENGTH = length;
-        NO_OF_ADD_STATEMENTS = no_of_add_statements;
-        NO_OF_REMOVE_STATEMENTS = no_of_remove_statements;
-        NO_OF_SEARCH_STATEMENTS = no_of_search_statements;
+        NO_OF_ADD_VERTEX = no_of_add_vertex;
+        NO_OF_ADD_EDGES = no_of_add_edges;
+        NO_OF_REMOVE_VERTEX = no_of_remove_vertex;
+        NO_OF_REMOVE_EDGES = no_of_remove_edges;
+        NO_OF_SHORTEST_PATH = no_of_shortest_path;
+        NO_OF_NEIGHBOURS = no_of_neighbours;
         writer = new PrintWriter(
                 new BufferedWriter(new FileWriter(findTestFile(), true)));
-        words = new String[LENGTH];
-        initialise();
+       
 
 
     }
@@ -33,46 +38,62 @@ public class DataGenerator
     public static void usage()
     {
         System.err.println("DataGenerator <Sample size (int)> " +
-                "<Number of add statements (int)> " +
-                "<Number of remove statements (int)> " +
-                "<Number of search statements (int)> ");
+                "<Number of add Vertex (int)> " +
+                "<Number of add Edges (int)> " +
+                "<Number of remove Vertex (int)> " +
+                "<Number of remove Edge (int)> " +
+                "<Number of shortest path (int)> " +
+                "<Number of Neighbours (int)> ");
         System.exit(1);
     }
 
-    private void addStatements() throws IOException
+    private void addVertex() throws IOException
     {
         Random random = new Random();
-        for (int i = 0; i < NO_OF_ADD_STATEMENTS; i++)
-            writer.println("a " + words[random.nextInt(LENGTH)]);
+        for (int i = 0; i < NO_OF_ADD_VERTEX; i++)
+            writer.println("AV " + random.nextInt(LENGTH));
+    }
+    
+    private void addEdges() throws IOException
+    {
+        Random random = new Random();
+        for (int i = 0; i < NO_OF_ADD_EDGES; i++)
+            writer.println("AE " + random.nextInt(LENGTH) + " "+ random.nextInt(LENGTH));
     }
 
-    private void removeOneStatements() throws IOException
+    private void removeVertex() throws IOException
     {
         Random random = new Random();
-        for (int i = 0; i < NO_OF_REMOVE_STATEMENTS; i++)
-            writer.println("ro " + words[random.nextInt(LENGTH)]);
+        for (int i = 0; i < NO_OF_REMOVE_VERTEX; i++)
+            writer.println("RV " + random.nextInt(LENGTH));
     }
 
-    private void searchStatements() throws IOException
+    private void removeEdges() throws IOException
     {
         Random random = new Random();
-        for (int i = 0; i < NO_OF_SEARCH_STATEMENTS; i++)
-            writer.println("s " + words[random.nextInt(LENGTH)]);
+        for (int i = 0; i < NO_OF_REMOVE_EDGES; i++)
+            writer.println("RE " + random.nextInt(LENGTH) + " "+ random.nextInt(LENGTH));
+    }
+    
+    private void shortestPath() throws IOException
+    {
+        Random random = new Random();
+        for (int i = 0; i < NO_OF_SHORTEST_PATH; i++)
+            writer.println("S " + random.nextInt(LENGTH) + " "+ random.nextInt(LENGTH));
+    }
+    private void printneighbours() throws IOException
+    {
+        Random random = new Random();
+        for (int i = 0; i < NO_OF_NEIGHBOURS; i++)
+            writer.println("N " + random.nextInt(LENGTH));
     }
 
 
-    private void initialise()
+    private void end() throws IOException
     {
-        Random random = new Random();
-        for (int i = 0; i < LENGTH; i++)
-        {
-            words[i] = "";
-            int wordLength = random.nextInt(3) + 3;
-            for (int j = 0; j < wordLength; j++)
-            {
-                words[i] += (char) (random.nextInt(26) + 'a');
-            }
-        }
+    	writer.println("V");
+    	writer.println("E");
+    	writer.println("Q");
     }
 
     private String findTestFile()
@@ -81,7 +102,7 @@ public class DataGenerator
         int fileIndex = 1;
         do
         {
-            testFile = new File("test" + fileIndex + ".in");
+            testFile = new File("src/testing/tests/test" + fileIndex + ".in");
             fileIndex++;
         } while (testFile.isFile());
 
@@ -95,7 +116,7 @@ public class DataGenerator
 
     public static void main(String[] args)
     {
-        if (args.length != 4)
+        if (args.length != 7)
         {
             usage();
             System.exit(1);
@@ -107,12 +128,19 @@ public class DataGenerator
                     new DataGenerator(Integer.parseInt(args[0]),
                             Integer.parseInt(args[1]),
                             Integer.parseInt(args[2]),
-                            Integer.parseInt(args[3]));
+                            Integer.parseInt(args[3]),
+                            Integer.parseInt(args[4]),
+                            Integer.parseInt(args[5]),
+                            Integer.parseInt(args[6]));
 
 
-            dataGenerator.addStatements();
-            dataGenerator.removeOneStatements();
-            dataGenerator.searchStatements();
+            dataGenerator.addVertex();
+            dataGenerator.addEdges();
+            dataGenerator.removeVertex();
+            dataGenerator.removeEdges();
+            dataGenerator.shortestPath();
+            dataGenerator.printneighbours();
+            dataGenerator.end();
             dataGenerator.closeWriter();
         }
 
