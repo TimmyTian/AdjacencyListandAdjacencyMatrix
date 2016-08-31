@@ -1,0 +1,15 @@
+add vertex time = 11.868569000000003 milliseconds
+add edge time = 3567.349712999987 milliseconds
+remove vertex time = 58.115866 milliseconds
+remove edge time = 1.0392659999999996 milliseconds
+shortest path time = 369.150396 milliseconds
+show neighbour time = 4.294066 milliseconds
+show vertex time = 1.2624710000000001 milliseconds
+show edge time = 362.03341700000004 milliseconds
+javac -cp .:jopt-simple-5.0.2.jar:sample.jar *.java
+
+
+Testing: java -cp .:jopt-simple-5.0.2.jar:sample.jar GraphTester adjlist test4-adjlist.vert.out test4-adjlist.edge.out test4-adjlist.neigh.out test4-adjlist.dist.out
+SUMMARY: GraphTester has passed 1 out of 1 tests.
+PASSED: 1
+
