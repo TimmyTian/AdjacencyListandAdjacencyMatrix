@@ -1,6 +1,16 @@
 import java.io.*;
 import java.util.Random;
 
+/**
+ * Data Generator for Testing
+ * 
+ * Generator for Generating Test Data
+ *
+ * @author Anto Dominic - S3553172
+ * @author Rashiv Romio Bhusal - S3511441
+ * 
+ */
+
 public class DataGenerator
 {
     private final int LENGTH;

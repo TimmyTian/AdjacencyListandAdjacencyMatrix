@@ -5,12 +5,16 @@ import joptsimple.OptionSet;
 import java.lang.String;
 
 /**
- * Framework to test the friendship graph implementations.
- *
- * There should be no need to change this for task A.  If you need to make changes for task B, please make a copy, then modify the copy for task B.
+ * Adjacency list implementation for the FriendshipGraph interface.
  * 
+ * Your task is to complete the implementation of this class.  You may add methods, but ensure your modified class compiles and runs.
+ *
  * @author Jeffrey Chan, 2016.
+ * @author Anto Dominic - S3553172
+ * @author Rashiv Romio Bhusal - S3511441
+ * 
  */
+
 public class GraphTester
 {
 	/** Name of class, used in error messages. */

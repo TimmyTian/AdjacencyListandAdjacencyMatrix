@@ -1,6 +1,14 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+/**
+ * MyLinkedList Generated for Adjacency Matrix 
+ *
+ * @author Anto Dominic - S3553172
+ * @author Rashiv Romio Bhusal - S3511441
+ * 
+ */
+
 public class MyLinkedList<Object> {
 	/** Reference to head node. */
 	protected Node<Object> mHead;
@@ -250,61 +258,7 @@ public class MyLinkedList<Object> {
 		return value;
 	} // end of delete()
 
-	/**
-	 * Returns the minimum value in the list.
-	 * 
-	 * @return Minimum value in the list.
-	 * 
-	 * @throws IndexOutOfBoundsException
-	 *             In index are out of bounds.
-	 */
-	// public int min() throws IllegalStateException {
-	// if (mLength == 0) {
-	// throw new IllegalStateException("Min is not defined for an empty list.");
-	// }
-	//
-	// // traverse list, looking for the minimum valued element
-	// int minValue = mHead.getValue();
-	// Node currNode = mHead.getNext();
-	//
-	// while (currNode != null) {
-	// if (currNode.getValue() < minValue) {
-	// minValue = currNode.getValue();
-	// }
-	// currNode = currNode.getNext();
-	// }
-	//
-	// return minValue;
-	// } // end of min()
-	//
-	//
-	/**
-	 * Returns the maximum value in the list.
-	 * 
-	 * @return Maximum value in the list.
-	 * 
-	 * @throws IndexOutOfBoundsException
-	 *             In index are out of bounds.
-	 */
-	// public int max() throws IndexOutOfBoundsException {
-	// if (mLength == 0) {
-	// throw new IllegalStateException("Min is not defined for an empty list.");
-	// }
-	//
-	// // traverse list, looking for the minimum valued element
-	// int maxValue = mHead.getValue();
-	// Node currNode = mHead.getNext();
-	//
-	// while (currNode != null) {
-	// if (currNode.getValue() > maxValue) {
-	// maxValue = currNode.getValue();
-	// }
-	// currNode = currNode.getNext();
-	// }
-	//
-	// return maxValue;
-	// } // end of max()
-	//
+	
 
 	/**
 	 * Print the list in head to tail.
@@ -313,27 +267,7 @@ public class MyLinkedList<Object> {
 		System.out.println(toString());
 	} // end of print()
 
-	/**
-	 * Print the list from tail to head.
-	 */
-	// public void reversePrint() {
-	// // use a stack
-	// Stack<Integer> stack = new Stack<Integer>();
-	// Node currNode = mHead;
-	// while (currNode != null) {
-	// stack.add(currNode.getValue());
-	// currNode = currNode.getNext();
-	// }
-	//
-	//
-	// while (!stack.empty()) {
-	// System.out.print(stack.pop() + " ");
-	// }
-	//
-	// System.out.println("");
-	// } // end of reversePrint()
-	//
-	//
+	
 	/**
 	 * @return String representation of the list.
 	 */
@@ -350,7 +284,9 @@ public class MyLinkedList<Object> {
 		return str.toString();
 	} // end of getString();
 	
-	
+	/**
+	 * Return Neighbours
+	 */
     public ArrayList<Object> neighbours() {
         ArrayList<Object> neighbours = new ArrayList<Object>();
         Node<Object> currNode = mHead;

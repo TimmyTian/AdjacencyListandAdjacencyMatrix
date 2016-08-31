@@ -4,11 +4,14 @@ import java.util.Map.Entry;
 
 
 /**
- * Adjacency matrix implementation for the FriendshipGraph interface.
+ * Adjacency list implementation for the FriendshipGraph interface.
  * 
  * Your task is to complete the implementation of this class.  You may add methods, but ensure your modified class compiles and runs.
  *
  * @author Jeffrey Chan, 2016.
+ * @author Anto Dominic - S3553172
+ * @author Rashiv Romio Bhusal - S3511441
+ * 
  */
 public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 {
@@ -17,6 +20,7 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 	private static int GRAPH_SIZE = 8;// 4096;
 	private static int counter = 0;
 	int[][] adjmatrix;
+	
 	/**
 	 * Contructs empty graph.
 	 */
@@ -31,7 +35,11 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 		}
 	} // end of AdjMatrix()
 
-
+	/*
+     * adding Vertex to Adjacency Matrix
+     * @see FriendshipGraph#addVertex(java.lang.Object)
+     */
+	
 	public void addVertex(T vertLabel) {
 		// for increasing the graph size if graph size is less than counter
 		if(counter >= GRAPH_SIZE){
@@ -60,7 +68,10 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
     		return;
 	} // end of addVertex()
 
-
+    /*
+     * add Edges to the Adjacency Matrix
+     * @see FriendshipGraph#addEdge(java.lang.Object, java.lang.Object)
+     */
 	public void addEdge(T srcLabel, T tarLabel) throws IllegalArgumentException {
 		if(!nodeMap.containsKey(srcLabel) || !nodeMap.containsKey(tarLabel))
     		throw new IllegalArgumentException("The Vertex doesn't exist");
@@ -70,12 +81,13 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 		adjmatrix[srcInt][tarInt] = 1;
 		adjmatrix[tarInt][srcInt] = 1;
 		
-		// Implement me!
 	} // end of addEdge()
 
 
-
-
+    /*
+     * Return the Neighbours of the given Vertex
+     * @see FriendshipGraph#neighbours(java.lang.Object)
+     */
 	public ArrayList<T> neighbours(T vertLabel) throws IllegalArgumentException  {
 		if(!nodeMap.containsKey(vertLabel))
     		throw new IllegalArgumentException("The Vertex doesn't exist");
@@ -87,12 +99,14 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 				neighbours.add(nodeMapReverse.get(i));
 			}
 		}
-		
-		
 		return neighbours;
 	} // end of neighbours()
 
-
+    
+	/*
+     * remove the vertex from the Adjacency Matrix
+     * @see FriendshipGraph#removeVertex(java.lang.Object)
+     */
 	public void removeVertex(T vertLabel) throws IllegalArgumentException  {
 		if(!nodeMap.containsKey(vertLabel))
     		throw new IllegalArgumentException("The Vertex doesn't exist");
@@ -106,7 +120,11 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 		nodeMapReverse.remove(vertex);
 	} // end of removeVertex()
 
-
+	
+    /*
+     * Remove the Edge from the Adjacency Matrix
+     * @see FriendshipGraph#removeEdge(java.lang.Object, java.lang.Object)
+     */
 	public void removeEdge(T srcLabel, T tarLabel) throws IllegalArgumentException  {
 		if(!nodeMap.containsKey(srcLabel) || !nodeMap.containsKey(tarLabel))
     		throw new IllegalArgumentException("The Vertex doesn't exist");
@@ -117,7 +135,11 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 		adjmatrix[tarInt][srcInt] = 0;
 	} // end of removeEdges()
 
-
+	
+    /*
+     * Print all the Vertices 
+     * @see FriendshipGraph#printVertices(java.io.PrintWriter)
+     */
 	public void printVertices(PrintWriter os) {
 		for(Entry<T, Integer> e: nodeMap.entrySet()) {
 			os.print(e.getKey()+" ");
@@ -125,7 +147,11 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 		os.println("");
 	} // end of printVertices()
 
-
+	
+    /*
+     * Print all the Edges 
+     * @see FriendshipGraph#printVertices(java.io.PrintWriter)
+     */
 	public void printEdges(PrintWriter os) {
 		// Implement me!
 		for(Entry<T, Integer> e: nodeMap.entrySet()) {
@@ -142,26 +168,33 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
     	}
 	} // end of printEdges()
 
-	
+    /*
+     * Return the shortest path between two vertices
+     * @see FriendshipGraph#shortestPathDistance(java.lang.Object, java.lang.Object)
+     */
 	public int shortestPathDistance(T vertLabel1, T vertLabel2) throws IllegalArgumentException {
-		// Implement me!
+		// Implementation of Dijkstra Algorithm for Shortest Path Calculation
+		
+		// Algo:
+		// 1. Initialise a distance matrix of size counter as infinite and visited_array of size counter as false
+		// 2. Visit all its neighbours.
+		// 3. Update the distances for all the neighbours (In the Distance Array).
+		// Repeat the process till all the connected nodes are visited
+		
 		if(!nodeMap.containsKey(vertLabel1) || !nodeMap.containsKey(vertLabel2))
     		throw new IllegalArgumentException("The Vertex doesn't exist");
 		
 		int src = nodeMap.get(vertLabel1);
 		int dest = nodeMap.get(vertLabel2);
 		
-		int distance[] = new int[counter]; // The output array. dist[i] will hold
-        // the shortest distance from src to i
-
-		// sptSet[i] will true if vertex i is included in shortest
-		// path tree or shortest distance from src to i is finalized
-		Boolean sptSet[] = new Boolean[counter];
+		int distance[] = new int[counter]; 
+		
+		Boolean visited_array[] = new Boolean[counter];
 		
 		// Initialize all distances as INFINITE and stpSet[] as false
 		for (int i = 0; i < counter; i++){
 		distance[i] = Integer.MAX_VALUE;
-		sptSet[i] = false;
+		visited_array[i] = false;
 		}
 		
 		// Distance of source vertex from itself is always 0
@@ -177,7 +210,7 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 			int min = Integer.MAX_VALUE, min_index=-1;
 				 
 		    for (int v = 0; v < counter; v++)
-		       if (sptSet[v] == false && distance[v] <= min){
+		       if (visited_array[v] == false && distance[v] <= min){
 		         min = distance[v];
 		         min_index = v;
 		       }
@@ -185,12 +218,12 @@ public class AdjMatrix <T extends Object> implements FriendshipGraph<T>
 			int u = min_index;
 			
 			// Mark the picked vertex as processed
-			sptSet[u] = true;
+			visited_array[u] = true;
 			
 			// Update dist value of the adjacent vertices of the
 			// picked vertex.
 			for (int v = 0; v < counter; v++)
-				if (!sptSet[v] && adjmatrix[u][v]!=0 && distance[u] != Integer.MAX_VALUE && distance[u]+adjmatrix[u][v] < distance[v])
+				if (!visited_array[v] && adjmatrix[u][v]!=0 && distance[u] != Integer.MAX_VALUE && distance[u]+adjmatrix[u][v] < distance[v])
 					distance[v] = distance[u] + adjmatrix[u][v];
 			}
 			

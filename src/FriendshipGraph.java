@@ -2,12 +2,16 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Friendship graph interface. 
- *
- * Note, you should not need to modify this.
+ * Adjacency list implementation for the FriendshipGraph interface.
+ * 
+ * Your task is to complete the implementation of this class.  You may add methods, but ensure your modified class compiles and runs.
  *
  * @author Jeffrey Chan, 2016.
+ * @author Anto Dominic - S3553172
+ * @author Rashiv Romio Bhusal - S3511441
+ * 
  */
+
 public interface FriendshipGraph<T extends Object>
 {
     /** Distance value for source and target vertex pairs that are disconnected. */
